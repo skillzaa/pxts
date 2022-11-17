@@ -1,17 +1,20 @@
-import { Application, Loader, Texture, AnimatedSprite, Sprite } from "pixi.js";
+import { Application, Loader, Texture, AnimatedSprite } from "pixi.js";
+import { getSpine } from "./spine-example";
 // import "./style.css";
-///////////////////////////////////////////////////
 
+declare const VERSION: string;
+///////////////////////////////////////////////////
 const gameWidth = 800;
 const gameHeight = 600;
 
-///////////////--Creating the App
+console.log(`Welcome from pixi-typescript-boilerplate ${VERSION}`);
+
 const app = new Application({
     backgroundColor: 0xd3d3d3,
     width: gameWidth,
     height: gameHeight,
 });
-///////////////--On load event
+
 window.onload = async (): Promise<void> => {
     await loadGameAssets();
 
@@ -19,15 +22,18 @@ window.onload = async (): Promise<void> => {
 
     resizeCanvas();
 
-    const birdFromSprite = Sprite.from("assets/cat.jpg");
+    const birdFromSprite = getBird();
     birdFromSprite.anchor.set(0.5, 0.5);
     birdFromSprite.position.set(gameWidth / 2, 530);
 
+    const spineExample = getSpine();
+    spineExample.position.y = 580;
+
     app.stage.addChild(birdFromSprite);
+    app.stage.addChild(spineExample);
     app.stage.interactive = true;
 };
 
-////////////////--loadGameAssets
 async function loadGameAssets(): Promise<void> {
     return new Promise((res, rej) => {
         const loader = Loader.shared;
@@ -46,7 +52,6 @@ async function loadGameAssets(): Promise<void> {
     });
 }
 
-/////-resizeCanvas
 function resizeCanvas(): void {
     const resize = () => {
         app.renderer.resize(window.innerWidth, window.innerHeight);
@@ -58,4 +63,18 @@ function resizeCanvas(): void {
 
     window.addEventListener("resize", resize);
 }
-///////////////////////////////////////////
+
+function getBird(): AnimatedSprite {
+    const bird = new AnimatedSprite([
+        Texture.from("birdUp.png"),
+        Texture.from("birdMiddle.png"),
+        Texture.from("birdDown.png"),
+    ]);
+
+    bird.loop = true;
+    bird.animationSpeed = 0.1;
+    bird.play();
+    bird.scale.set(3);
+
+    return bird;
+}
